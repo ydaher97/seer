@@ -26,13 +26,13 @@ export const useNavigation = () => {
         active: pathname.startsWith("/conversations"),
         count: unseenMessagesCount,
       },
-      {
-        name: "friends",
-        href: "friends",
-        icon: <Users />,
-        active: pathname.startsWith("/friends"),
-        count: requestsCount,
-      },
+      // {
+      //   name: "friends",
+      //   href: "friends",
+      //   icon: <Users />,
+      //   active: pathname.startsWith("/friends"),
+      //   count: requestsCount,
+      // },
       {
         name: "Map",
         href: "map",
@@ -40,7 +40,7 @@ export const useNavigation = () => {
         active: pathname.startsWith("/map"),
       },
     ],
-    [pathname, requestsCount, unseenMessagesCount]
+    [pathname, unseenMessagesCount]
   );
   return paths;
 };

@@ -8,6 +8,8 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useMutatoinState } from "@/hooks/useMutationState";
 import { useUserLocation } from "@/hooks/useUserLocation";
 import GoogleMap from "./GoogleMap";
+import { useRouter } from 'next/navigation'
+import { Loader } from "lucide-react";
 // import LoadingSpinner from "@/components/ui/LoadingSpinner";
 // import ErrorMessage from "@/components/ui/ErrorMessage";
 
@@ -22,6 +24,8 @@ type Location = {
 };
 
 const Map = () => {
+  const router = useRouter()
+
   const locationsQuery = useQuery(api.locations.getLocations);
   const userLocation = useUserLocation();
   const [selectedLocationId, setSelectedLocationId] = React.useState<Id<"locations"> | null>(null);
@@ -36,30 +40,32 @@ const Map = () => {
 
   React.useEffect(() => {
     if (conversation && selectedLocationId) {
-      console.log({conversation, selectedLocationId});
       updateconvesationMember({ conversationId: conversation._id, locationId: selectedLocationId });
+      router.push(`/conversations`)
     }
-  }, [conversation, selectedLocationId, updateconvesationMember]);
+  }, [conversation, selectedLocationId, updateconvesationMember, router]);
 
   const memoizedHandleMarkerClick = useCallback((location: Location) => {
     setSelectedLocationId(location._id);
   }, []);
 
   if (pending) {
-    return 'loading...';
+    return <div className="flex items-center justify-center h-full w-full">
+      <Loader className="animate-spin" />
+    </div>;
   }
 
   if (!locationsQuery) {
     return 'failed to load locations';
   }
 
-  if(conversation && !pending) {
-   return (<GroupConversation
-    key={conversation._id}
-    id={conversation._id}
-    name={conversation.name || ""}
-  />)
-  }
+  // if(conversation && !pending) {
+  //  return (<GroupConversation
+  //   key={conversation._id}
+  //   id={conversation._id}
+  //   name={conversation.name || ""}
+  // />)
+  // }
 
   return (
     <Card className="flex flex-col lg:flex-row h-full w-full p-2 items-center justify-center bg-secondary text-secondary-foreground">
