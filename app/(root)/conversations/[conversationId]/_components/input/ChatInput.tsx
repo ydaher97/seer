@@ -26,13 +26,14 @@ const ChatInput = () => {
   const { mutate: createMessage, pending: penddingMessage } = useMutatoinState(
     api.message.create
   );
-  
+
   const form = useForm<z.infer<typeof chatMessageSchema>>({
     resolver: zodResolver(chatMessageSchema),
     defaultValues: {
       content: "",
     },
   });
+  
 
   const handleSubmit = async (values: z.infer<typeof chatMessageSchema>) => {
     createMessage({
