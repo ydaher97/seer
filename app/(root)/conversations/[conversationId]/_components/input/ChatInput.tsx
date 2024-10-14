@@ -33,7 +33,7 @@ const ChatInput = () => {
       content: "",
     },
   });
-  
+
 
   const handleSubmit = async (values: z.infer<typeof chatMessageSchema>) => {
     createMessage({
@@ -94,7 +94,7 @@ const ChatInput = () => {
                 </FormItem>
               )}
             />
-            <Button size="icon" type="submit">
+            <Button size="icon" type="submit" disabled={penddingMessage}>
               <ArrowBigRight />
             </Button>
           </form>

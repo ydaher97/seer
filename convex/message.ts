@@ -11,7 +11,7 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const id = await ctx.auth.getUserIdentity();
     if (!id) {
-      throw new ConvexError("unauthrized");
+      throw new ConvexError("unauthorized");
     }
 
     const currentUser = await getUserByClerkId({ ctx, clerkId: id.subject });
@@ -33,11 +33,32 @@ export const create = mutation({
       throw new ConvexError("you are not part of this conversation");
     }
 
+    // Get the current message count for this conversation
+    const messageCount = await ctx.db
+      .query("messages")
+      .withIndex("by_conversationId", (q) => q.eq("conversationId", args.conversationId))
+      .collect();
+
+    // If we're at 100 messages, delete the oldest one
+    if (messageCount.length >= 100) {
+      const oldestMessage = await ctx.db
+        .query("messages")
+        .withIndex("by_conversationId", (q) => q.eq("conversationId", args.conversationId))
+        .order("asc")
+        .first();
+
+      if (oldestMessage) {
+        await ctx.db.delete(oldestMessage._id);
+      }
+    }
+
+    // Insert the new message
     const message = await ctx.db.insert("messages", {
       senderId: currentUser._id,
       ...args,
     });
 
+    // Update the conversation's lastMessageId
     await ctx.db.patch(args.conversationId, { lastMessageId: message });
 
     return message;
