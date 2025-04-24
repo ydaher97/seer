@@ -8,11 +8,20 @@ import React from "react";
 import DMConversationItem from "./_components/DMConversationItem";
 import CreateGroupDialog from "./_components/CreateGroupDialog";
 import GroupConversation from "./_components/GroupConversation";
+import { useLocationGroupUpdate } from "@/app/hooks/useLocationGroupUpdate";
+import { useUserLocation } from "@/hooks/useUserLocation";
 
 type Props = React.PropsWithChildren<{}>;
 
 const Conversationslayout = ({ children }: Props) => {
+  const userLocation = useUserLocation();
+
+  const locationsQuery = useQuery(api.locations.getLocations) || [];
+
+    const { pending } = useLocationGroupUpdate(locationsQuery, userLocation);
+
   const conversations = useQuery(api.conversations.get);
+  
   return (
     <>
       <ItemList title="conversation" action={<CreateGroupDialog />}>
