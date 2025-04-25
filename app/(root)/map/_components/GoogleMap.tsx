@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
 import { useMutatoinState } from "@/hooks/useMutationState";
 import { api } from "@/convex/_generated/api";
@@ -14,9 +14,17 @@ interface GoogleMapProps {
 
 const GoogleMap: React.FC<GoogleMapProps> = ({ locations, userLocation, onMarkerClick }) => {
   const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstance = useRef<google.maps.Map | null>(null);
+  const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
+  const polygonsRef = useRef<google.maps.Polygon[]>([]);
   const { mutate: createLocationGroup } = useMutatoinState(api.locations.createLocationGroup);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Memoize the location group creation
+  const handleLocationGroup = useCallback((locationId: string, name: string) => {
+    createLocationGroup({ locationId, name });
+  }, [createLocationGroup]);
 
   useEffect(() => {
     const initMap = async () => {
@@ -37,22 +45,24 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ locations, userLocation, onMarker
         const mapOptions: google.maps.MapOptions = {
           center: userLocation || { lat: 32.794, lng: 35.5312},
           zoom: 10,
-          disableDefaultUI: false, // Enable UI controls
+          disableDefaultUI: false,
           mapId: "1f9f7b5e8a0f7f7d",
-          // Add these controls
           zoomControl: true,
           mapTypeControl: true,
           scaleControl: true,
           streetViewControl: true,
           rotateControl: true,
           fullscreenControl: true,
-          // Customize the map style
-          styles: [
-            // Add custom map styles here
-          ]
         };
 
         const map = new Map(mapRef.current!, mapOptions);
+        mapInstance.current = map;
+
+        // Clear existing markers and polygons
+        markersRef.current.forEach(marker => marker.map = null);
+        polygonsRef.current.forEach(polygon => polygon.setMap(null));
+        markersRef.current = [];
+        polygonsRef.current = [];
 
         const markers = locations.map((location) => {
           const marker = new AdvancedMarkerElement({
@@ -70,17 +80,20 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ locations, userLocation, onMarker
             fillOpacity: 0.35,
           });
           
-          const isInside = poly.containsLocation(userLocation!, polygon);
-          createLocationGroup({ locationId: location._id, name: location.name });
-
-          if (isInside) {
-            polygon.setOptions({ fillColor: "#00FF00" });
-            marker.addListener("click", () => {
-              onMarkerClick(location);
-            });
+          if (userLocation) {
+            const isInside = poly.containsLocation(userLocation, polygon);
+            if (isInside) {
+              polygon.setOptions({ fillColor: "#00FF00" });
+              marker.addListener("click", () => {
+                onMarkerClick(location);
+              });
+              // handleLocationGroup(location._id, location.name);
+            }
           }
 
           polygon.setMap(map);
+          polygonsRef.current.push(polygon);
+          markersRef.current.push(marker);
 
           return marker;
         });
@@ -100,10 +113,19 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ locations, userLocation, onMarker
     };
 
     initMap();
-  }, [locations, userLocation, onMarkerClick, createLocationGroup]);
 
-  if (isLoading) return <div>Loading map...</div>;
-  // if (error) return <div>Error loading map: {error}</div>;
+    // Cleanup function
+    return () => {
+      markersRef.current.forEach(marker => marker.map = null);
+      polygonsRef.current.forEach(polygon => polygon.setMap(null));
+      if (mapInstance.current) {
+        mapInstance.current = null;
+      }
+    };
+  }, [locations, userLocation, onMarkerClick, handleLocationGroup]);
+
+  // if (isLoading) return <div>Loading map...</div>;
+  if (error) return <div>Error loading map: {error}</div>;
 
   return (
     <div 

@@ -3,6 +3,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useMutatoinState } from "@/hooks/useMutationState";
+import { Loader } from "@googlemaps/js-api-loader";
 
 type Location = {
   _id: Id<"locations">;
@@ -17,9 +18,9 @@ export const useLocationGroupUpdate = (
   locations: Location[] | undefined,
   userLocation: { lat: number; lng: number } | null
 ) => {
-  // const router = useRouter();
   const [containingLocationId, setContainingLocationId] = useState<Id<"locations"> | null>(null);
   const { mutate: updateconvesationMember, pending } = useMutatoinState(api.locations.updateConversationMembers);
+  const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState(false);
 
   // Get conversation for the containing location
   const conversation = useQuery(
@@ -27,9 +28,28 @@ export const useLocationGroupUpdate = (
     containingLocationId ? { locationId: containingLocationId } : "skip"
   );
 
+  // Load Google Maps API
+  useEffect(() => {
+    const loadGoogleMaps = async () => {
+      try {
+        const loader = new Loader({
+          apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY!,
+          version: "weekly",
+          libraries: ["geometry"],
+        });
+        await loader.load();
+        setIsGoogleMapsLoaded(true);
+      } catch (error) {
+        console.error("Failed to load Google Maps:", error);
+      }
+    };
+
+    loadGoogleMaps();
+  }, []);
+
   // Check user location against all locations
   useEffect(() => {
-    if (!userLocation || !locations) return;
+    if (!userLocation || !locations || !isGoogleMapsLoaded) return;
 
     const userLocationPoint = new google.maps.LatLng(userLocation.lat, userLocation.lng);
     const containingLocation = locations.find(location => {
@@ -42,7 +62,7 @@ export const useLocationGroupUpdate = (
     if (containingLocation) {
       setContainingLocationId(containingLocation._id);
     }
-  }, [userLocation, locations]);
+  }, [userLocation, locations, isGoogleMapsLoaded]);
 
   // Handle conversation update
   useEffect(() => {
@@ -51,9 +71,8 @@ export const useLocationGroupUpdate = (
         conversationId: conversation._id, 
         locationId: containingLocationId 
       });
-      // router.push(`/conversations`);
     }
   }, [conversation, containingLocationId, updateconvesationMember]);
 
   return { pending };
-}; 
+};

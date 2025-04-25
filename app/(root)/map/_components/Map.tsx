@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 const Map = () => {
   const locationsQuery = useQuery(api.locations.getLocations) || [];
   const userLocation = useUserLocation();
-  const { pending } = useLocationGroupUpdate(locationsQuery, { lat: 32.794, lng: 35.5312});
+  const { pending } = useLocationGroupUpdate(locationsQuery, userLocation);
   const router  = useRouter()
   if (pending) {
     return <div className="flex items-center justify-center h-full w-full">
