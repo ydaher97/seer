@@ -118,6 +118,15 @@ export const updateLocation = mutation({
       if (!currentUser) {
         throw new ConvexError("user not found");
       }
+
+      if (
+        args.coordinates.lat < -90 ||
+        args.coordinates.lat > 90 ||
+        args.coordinates.lng < -180 ||
+        args.coordinates.lng > 180
+      ) {
+        throw new ConvexError("Invalid coordinates");
+      }
   
     const userLocation = await ctx.db
       .query("userLocations")

@@ -108,5 +108,97 @@ export const useUserLocation = () => {
     };
   }, [handlePositionUpdate, handleError]);
 
+  // useEffect(() => {
+
+
+  //   const save = async (lat: number, lng: number) => {
+  //     try {
+  //       await updateLocation({  latitude: lat, longitude: lng });
+  //     } catch (err) {
+  //       console.error("Error saving location to Convex:", err);
+  //     }
+  //   };
+
+  //   const getLocation = () => {
+  //     if (!navigator.geolocation) {
+  //       setError("Geolocation is not supported");
+  //       return;
+  //     }
+
+  //     navigator.geolocation.getCurrentPosition(
+  //       (pos) => {
+  //         const { latitude, longitude } = pos.coords;
+  //         setUserLocation({ lat: latitude, lng: longitude });
+  //         save(latitude, longitude);
+  //       },
+  //       (err) => {
+  //         setError(err.message);
+  //       }
+  //     );
+  //   };
+
+  //   getLocation();
+  // }, [userLocation]);
+
+
   return userLocation;
 };
+
+// import { useEffect, useState } from "react";
+// // import { useMutation } from "convex/react";
+// import { api } from "@/convex/_generated/api";
+// import { useMutatoinState } from "@/hooks/useMutationState";
+
+// export function useUpdateLocation(autoUpdateIntervalMs: number = 0) {
+//   const { mutate: updateLocation, pending } = useMutatoinState(api.locations.updateLocation);
+
+//   const [error, setError] = useState<string | null>(null);
+//   const [loading, setLoading] = useState(false);
+
+//   const getAndUpdateLocation = async () => {
+//     if (!navigator.geolocation) {
+//       setError("Geolocation is not supported by this browser.");
+//       return;
+//     }
+
+//     setLoading(true);
+
+//     navigator.geolocation.getCurrentPosition(
+//       async (position) => {
+//         const { latitude, longitude } = position.coords;
+//         try {
+//           await updateLocation({
+//             coordinates: {
+//               lat: latitude,
+//               lng: longitude,
+//             },
+//           });
+//           setError(null);
+//         } catch (err) {
+//           console.error("Error updating location:", err);
+//           setError("Failed to update location.");
+//         } finally {
+//           setLoading(false);
+//         }
+//       },
+//       (err) => {
+//         console.error("Geolocation error:", err);
+//         setError(err.message);
+//         setLoading(false);
+//       }
+//     );
+//   };
+
+//   useEffect(() => {
+//     if (autoUpdateIntervalMs > 0) {
+//       getAndUpdateLocation(); // initial fetch
+//       const interval = setInterval(() => {
+//         getAndUpdateLocation();
+//       }, autoUpdateIntervalMs);
+
+//       return () => clearInterval(interval);
+//     }
+//   }, [autoUpdateIntervalMs]);
+
+//   return { getAndUpdateLocation, error, loading };
+// }

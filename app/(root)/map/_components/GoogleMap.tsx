@@ -84,7 +84,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ locations, userLocation, onMarker
             const isInside = poly.containsLocation(userLocation, polygon);
             if (isInside) {
               polygon.setOptions({ fillColor: "#00FF00" });
-              marker.addListener("click", () => {
+              marker.addListener("gmp-click", () => {
                 onMarkerClick(location);
               });
               // handleLocationGroup(location._id, location.name);
