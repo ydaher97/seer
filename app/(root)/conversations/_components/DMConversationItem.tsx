@@ -4,6 +4,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { User } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { getRandomAvatar, getAvatarFallback } from "@/lib/utils/avatar";
 
 type Props = {
   id: Id<"conversations">;
@@ -19,9 +20,9 @@ const DMConversationItem = ({ id, imageUrl, usrename , lastMessageContent , last
       <Card className="p-2 flex flex-row items-center gap-4 truncate">
         <div className="flex flex-row items-center gap-4 truncate">
           <Avatar>
-            <AvatarImage src={imageUrl} />
+            <AvatarImage src={getRandomAvatar(usrename)} />
             <AvatarFallback>
-              <User />
+              {getAvatarFallback(usrename)}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col truncate">

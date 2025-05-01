@@ -8,6 +8,7 @@ import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { CircleArrowLeft, Settings } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { getRandomAvatar, getAvatarFallback } from "@/lib/utils/avatar";
 
 type Props = {
   imageUrl?: string;
@@ -27,8 +28,8 @@ const Header = ({ imageUrl, name ,options}: Props) => {
           <CircleArrowLeft />
         </Link>
         <Avatar className="h-8 w-8">
-          <AvatarImage src={imageUrl} />
-          <AvatarFallback>{name.substring(0, 1)}</AvatarFallback>
+          <AvatarImage src={getRandomAvatar(name)} />
+          <AvatarFallback>{getAvatarFallback(name)}</AvatarFallback>
         </Avatar>
         <h2 className="font-semibold">{name}</h2>
       </div>

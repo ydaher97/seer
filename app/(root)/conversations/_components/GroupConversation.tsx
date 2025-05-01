@@ -4,6 +4,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { User } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { getRandomAvatar, getAvatarFallback } from "@/lib/utils/avatar";
 
 type Props = {
   id: Id<"conversations">;
@@ -18,8 +19,9 @@ const GroupConversation = ({ id,  name , lastMessageContent , lastMessageSender 
       <Card className="p-2 flex flex-row items-center gap-4 truncate">
         <div className="flex flex-row items-center gap-4 truncate">
           <Avatar>
+            <AvatarImage src={getRandomAvatar(name)} />
             <AvatarFallback>
-              {name.charAt(0).toLocaleUpperCase()}
+              {getAvatarFallback(name)}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col truncate">

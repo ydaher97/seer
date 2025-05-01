@@ -2,7 +2,7 @@ import React from 'react'
 import {format } from "date-fns"
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
+import { getRandomAvatar, getAvatarFallback } from '@/lib/utils/avatar';
 
 type Props = {
     formCurrentUser: boolean;
@@ -40,15 +40,15 @@ const Message = ({
         </div>
         {seen}
       </div>
-      {/* <Avatar className={cn("relative w-8 h-8", {"order-2":formCurrentUser,
+      <Avatar className={cn("relative w-8 h-8", {"order-2":formCurrentUser,
         "order-1":!formCurrentUser,
         "invisible": lastByUser
       })}>
-        <AvatarImage src={senderImage}/>
+        <AvatarImage src={getRandomAvatar(senderName)}/>
         <AvatarFallback>
-            {senderName?.substring(0,1)}
+            {getAvatarFallback(senderName)}
         </AvatarFallback>
-      </Avatar> */}
+      </Avatar>
     </div>
   )
 }
