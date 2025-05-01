@@ -4,18 +4,21 @@ import React from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUserLocation  } from "@/hooks/useUserLocation";
+import  useLocation   from "@/hooks/useLocation";
+
 import GoogleMap from "./GoogleMap";
 import { Loader } from "lucide-react";
 import { useLocationGroupUpdate } from "../../../hooks/useLocationGroupUpdate";
 import { useRouter } from "next/navigation";
+const locationOptions = { enableHighAccuracy: true };
 
 const Map = () => {
   const locationsQuery = useQuery(api.locations.getLocations) || [];
-  const userLocation = useUserLocation();
-  // const { getAndUpdateLocation, error, loading } = useUpdateLocation();
-  const { pending } = useLocationGroupUpdate(locationsQuery, userLocation);
+  const { location, loading, error, refetch } = useLocation(locationOptions);
+  const userLocation = location ? { lat: location.latitude, lng: location.longitude } : null;
+  // const { pending } = useLocationGroupUpdate(locationsQuery, userLocation);
   const router  = useRouter()
-  if (pending) {
+  if (loading) {
     return <div className="flex items-center justify-center h-full w-full">
       <Loader className="animate-spin" />
     </div>;

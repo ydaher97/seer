@@ -33,7 +33,7 @@ const Header = ({ imageUrl, name ,options}: Props) => {
         </Avatar>
         <h2 className="font-semibold">{name}</h2>
       </div>
-      <div className="flex gap-2">
+      {/* <div className="flex gap-2">
         {options ? 
         <DropdownMenu>
           <DropdownMenuTrigger>
@@ -55,7 +55,7 @@ const Header = ({ imageUrl, name ,options}: Props) => {
             </DropdownMenuContent>
           </DropdownMenuTrigger>
         </DropdownMenu> : null}
-      </div>
+      </div> */}
     </Card>
   );
 };
