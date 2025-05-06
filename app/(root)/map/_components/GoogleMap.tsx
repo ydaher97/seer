@@ -10,6 +10,7 @@ interface GoogleMapProps {
   locations: Location[];
   userLocation: { lat: number; lng: number } | null;
   onMarkerClick: (location: Location) => void;
+  onMapError?: (error: string) => void;
 }
 
 const GoogleMap: React.FC<GoogleMapProps> = ({ locations, userLocation, onMarkerClick }) => {

@@ -116,7 +116,14 @@ function usePersistentLocation(
       },
       // Error Callback
       (err) => {
-        console.error(`Geolocation Error: ${err.message} (Code: ${err.code})`);
+        console.error(`Geolocation Error Details:
+          Message: ${err.message}
+          Code: ${err.code}
+          PERMISSION_DENIED: ${err.PERMISSION_DENIED}
+          POSITION_UNAVAILABLE: ${err.POSITION_UNAVAILABLE}
+          TIMEOUT: ${err.TIMEOUT}
+          Browser: ${navigator.userAgent}
+        `);
         setError(err);
         // Decide if we clear location state on error, or keep showing potentially stale cache?
         // Let's clear it for consistency with non-persistent version.
